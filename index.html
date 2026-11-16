@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>쉬운환승 · 지하철 엘리베이터 찾기</title>
+<link rel="stylesheet" href="style.css">
+<script src="routes.js" defer></script>
+<script src="app.js" defer></script><script src="integrations.js" defer></script>
+</head>
+<body>
+<header><div class="wrap brand">쉬운환승 <span>서울</span></div></header>
+<main class="wrap">
+<p id="offline-note" class="station-notices" hidden>오프라인 시연 · 공식 CSV에 담긴 충무로·불광·신당 환승 순서를 볼 수 있습니다. 지도와 가동 상태 조회는 앱 서버에서 이용할 수 있습니다.</p>
+<section id="offline-outage" class="panel outage-demo" hidden aria-labelledby="offline-outage-title">
+<h2 id="offline-outage-title">충무로역 7번 출입구 가상 고장</h2>
+<p>서울교통공사 시설 정보 기준 · 지상 1층 ↔ 지하 1층</p>
+<p>오프라인 시연용 가정 · 실제 가동 상태와 공사 현황 미조회</p>
+<button id="offline-outage-toggle" type="button" aria-pressed="false">가상 고장 적용</button>
+<p id="offline-outage-result" role="status"></p>
+</section>
+<nav class="quick-nav" aria-label="주요 기능">
+<a href="#find-elevator">엘리베이터 검색</a>
+<a href="#transfer-guide">환승 안내</a>
+<a href="#outage-guide">가상 고장 시연</a>
+</nav>
+<section id="find-elevator" tabindex="-1" class="panel elevator-search" aria-labelledby="elevator-search-title">
+<h1 id="elevator-search-title">지하철 엘리베이터 찾기</h1>
+<p>휠체어와 유모차로 이용할 엘리베이터의 위치와 운행 층을 찾아보세요.</p>
+<form id="elevator-search">
+<label for="station-search">역 이름 또는 질문</label>
+<div class="search-row">
+<input id="station-search" type="search" placeholder="예: 혜화역에서 지상에 나가고 싶어" required maxlength="120" aria-describedby="station-search-help">
+<button type="submit">검색</button>
+<button type="submit" value="ai" aria-describedby="station-search-help">AI 검색</button>
+</div>
+</form>
+<div id="saved-stations" hidden aria-label="즐겨찾는 역">
+<p>즐겨찾는 역</p>
+<div id="saved-station-list"></div>
+</div>
+<p id="saved-station-feedback" role="status"></p>
+<p id="station-search-help">‘혜화역에서 유모차로 지상에 나가고 싶어’처럼 입력하세요. AI 검색을 누르면 입력 문장이 Google Gemini에 전송됩니다.</p>
+<p id="station-search-status" role="status"></p>
+<p id="station-search-summary" class="station-notices" hidden></p>
+<fieldset id="facility-filters" hidden>
+<legend>결과 좁히기</legend>
+<label><input id="filter-ground" type="checkbox"> 지상 연결만</label>
+<label><input id="filter-usable" type="checkbox"> 사용 가능만</label>
+<p id="filter-count" role="status"></p>
+<button id="refresh-operation" type="button">가동 상태 다시 확인</button>
+</fieldset>
+<div id="station-search-results"></div>
+<a href="https://data.seoul.go.kr/dataList/OA-22725/A/1/datasetView.do">서울교통공사 엘리베이터 위치 자료</a>
+</section>
+<section id="transfer-guide" tabindex="-1" class="intro">
+<h2 class="transfer-heading">역별 환승 안내</h2>
+<p>내린 열차와 갈아탈 열차의 방향을 선택하세요.</p>
+</section>
+<div class="layout">
+<section class="panel controls" aria-labelledby="select-title">
+<h2 id="select-title">방향 선택</h2>
+<label for="transfer-station">환승역</label>
+<select id="transfer-station">
+<option value="충무로">충무로역 · 3·4호선</option>
+<option value="불광">불광역 · 3·6호선</option>
+<option value="신당">신당역 · 2·6호선</option>
+</select>
+<label for="departure">내린 열차</label>
+<select id="departure"></select>
+<label for="arrival">갈아탈 열차</label>
+<select id="arrival"></select>
+<button id="find-transfer-elevators" type="button">이 역 엘리베이터 확인</button>
+</section>
+<section class="panel result" aria-labelledby="route-title">
+<h2 id="route-title">환승 순서</h2>
+<p id="summary" aria-live="polite"></p>
+<p id="lift-notice" class="station-notices" hidden>이 동선에는 휠체어리프트가 포함됩니다. 이용 가능 여부와 도움은 역무원에게 확인하세요.</p>
+<ol id="steps"></ol>
+<details class="route-evidence">
+<summary>엘리베이터 후보 확인 근거</summary>
+<p>3호선 승강장(지하 4층)에서 대합실(지하 2층)로 이동하는 단계는 시설 목록의 내부 3호기 운행 층과 일치합니다. 공식 환승 자료에는 호기 번호가 없어 현장 대조가 필요합니다.</p>
+<ul>
+<li><a href="https://www.data.go.kr/data/15130556/fileData.do">국토교통부 환승 이동경로</a></li>
+<li><a href="https://data.seoul.go.kr/dataList/OA-22725/A/1/datasetView.do">서울교통공사 엘리베이터 위치 API</a></li>
+<li><a href="https://www.seoulmetro.co.kr/kr/cyberStation.do">서울교통공사 사이버스테이션</a></li>
+</ul>
+</details>
+</section>
+</div>
+<section class="panel integrations" aria-labelledby="integrations-title">
+<h2 id="integrations-title">지도와 시설 정보</h2>
+<p id="api-hint"></p>
+<div id="station-map" aria-label="충무로역 지도" hidden></div>
+<p id="map-status">카카오 지도 연동 대기</p>
+<a href="https://map.kakao.com/link/search/충무로역">카카오맵에서 충무로역 검색</a>
+<dl>
+<dt>엘리베이터 위치</dt><dd id="locations-status">조회 대기</dd>
+<dt>승강기 가동현황</dt><dd id="operation-status">조회 대기</dd>
+<dt>출입구 임시폐쇄 공사현황</dt>
+<dd><p id="closures-status" aria-live="polite">조회 대기</p><ul id="closures-list" hidden></ul>
+<a href="https://data.seoul.go.kr/dataList/OA-22122/A/1/datasetView.do">서울시 공식 공사현황 자료</a></dd>
+<dt>환승 API</dt><dd id="transfer-status">공식 CSV 표시 중</dd>
+</dl>
+<ul id="facilities"></ul><ol id="transfer-preview" aria-label="KRIC 예제 응답"></ol>
+<div id="outage-guide" tabindex="-1">
+<section class="outage-demo" aria-labelledby="outage-title" hidden>
+<h3 id="outage-title">7번 출입구 엘리베이터</h3>
+<dl>
+<dt>설치 위치</dt><dd id="exit-location"></dd>
+<dt>공식 가동 상태</dt><dd id="exit-operation"></dd>
+<dt>출입구 공사 공지</dt><dd id="exit-closure"></dd>
+</dl>
+<button id="outage-toggle" type="button" aria-pressed="false">가상 고장 적용</button>
+<p id="outage-result" role="status">시연용 가상 고장 꺼짐</p>
+</section>
+<p id="outage-availability">충무로역 7번 출입구 시설 정보가 확인되면 가상 고장 시연을 사용할 수 있습니다.</p>
+</div>
+</section>
+<p class="source">공식 자료 기반 시연 · 현장 동선 미확인<br>
+<a href="https://www.data.go.kr/data/15130556/fileData.do">국토교통부 철도역 환승 이동경로 · 2026-08-11 파일</a></p>
+</main>
+</body>
+</html>
+
+

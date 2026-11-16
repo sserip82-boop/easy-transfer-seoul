@@ -1,0 +1,76 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 1rem/1.6 "Pretendard", "Malgun Gothic", system-ui, sans-serif; background: #f3f7f6; color: #122e2a; }
+.wrap { width: min(960px, calc(100% - 36px)); margin-inline: auto; }
+header { background: #103b35; color: white; }
+.brand { padding-block: 14px; font-weight: 750; }
+.brand span { margin-left: 8px; color: #bddbd4; font-size: .88rem; }
+.intro { padding: 36px 0 22px; }
+h1 { margin: 10px 0 2px; font-size: clamp(2rem, 6vw, 3.25rem); letter-spacing: -.06em; }
+.intro > p { margin: 0; }
+.lines { display: flex; gap: 6px; }
+.lines span { background: #99400c; color: white; border-radius: 20px; padding: 2px 11px; font-size: .86rem; font-weight: 700; }
+.lines span + span { background: #086481; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr); gap: 16px; align-items: start; }
+.panel { background: #fff; border: 1px solid #d2e1dd; border-radius: 18px; padding: clamp(16px, 3vw, 26px); }
+h2 { margin: 0 0 12px; font-size: 1.28rem; }
+label { display: block; font-weight: 700; margin-top: 14px; }
+select { margin-top: 5px; width: 100%; min-height: 48px; border: 1px solid #839e98; border-radius: 8px; padding: 8px; background: white; color: inherit; font: inherit; }
+:focus-visible { outline: 3px solid #126e8d; outline-offset: 3px; }
+#summary { margin: 0; color: #365b55; }
+ol { margin: 12px 0 0; padding-left: 26px; }
+li { border-top: 1px solid #e3ebe9; padding: 10px 0 10px 5px; }
+li::marker { color: #12695a; font-weight: 750; }
+.source { color: #365b55; font-size: .9rem; margin: 16px 0 32px; }
+a { color: #155b50; }
+@media (max-width: 680px) { .layout { grid-template-columns: 1fr; } .intro { padding-top: 22px; } }
+.integrations { margin-top: 16px; }
+#station-map, .search-station-map { height: 280px; border-radius: 10px; }
+.integrations dt { font-weight: 750; margin-top: 10px; }
+.integrations dd { margin-inline-start: 0; color: #365b55; }
+#facilities:empty, #api-hint:empty { display: none; }
+.outage-demo { margin-top: 18px; padding: 16px; border: 1px solid #d2e1dd; border-radius: 12px; }
+.outage-demo h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.outage-demo button { min-height: 44px; padding: 8px 14px; border: 1px solid #155b50; border-radius: 8px; background: #155b50; color: white; font: inherit; cursor: pointer; }
+.outage-demo button[aria-pressed="true"] { background: #8b370f; border-color: #8b370f; }
+.outage-demo p { margin: 8px 0 0; }
+#transfer-preview:empty { display: none; }
+.elevator-note { display: block; color: #365b55; margin-top: 4px; }
+.elevator-search { margin-top: 24px; }
+.elevator-search h1 { margin: 0; }
+.transfer-heading { margin: 8px 0 0; font-size: clamp(1.6rem, 4vw, 2.25rem); }
+.search-row { display: flex; gap: 8px; margin-top: 5px; }
+.search-row input { flex: 1; min-width: 0; min-height: 48px; border: 1px solid #839e98; border-radius: 8px; padding: 8px 12px; font: inherit; }
+.search-row button { border: 0; border-radius: 8px; padding: 8px 16px; color: white; background: #155b50; font: inherit; cursor: pointer; }
+.search-row button:disabled { opacity: .65; cursor: wait; }
+#station-search-results h2 { margin-top: 16px; }
+.station-notices { margin-block: 10px; padding: 10px 12px; background: #f3f7f6; border-radius: 8px; }
+#facility-filters { margin: 12px 0; padding: 8px 12px; border: 1px solid #839e98; border-radius: 8px; }
+#facility-filters label { display: inline-flex; align-items: center; min-height: 44px; gap: 6px; margin: 0 14px 0 0; }
+#filter-count { margin: 0; }
+.facility-cards { list-style: none; padding: 0; margin: 12px 0 18px; display: grid; gap: 10px; }
+.facility-cards > li { padding: 14px; border: 1px solid #d2e1dd; border-radius: 10px; }
+.facility-cards h3, .facility-cards p { margin: 0; }
+.facility-cards > li > small { display: block; }
+.facility-work { color: #80330e; margin-top: 6px; }
+.facility-work > li { padding: 3px 0; border: 0; }
+.quick-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.quick-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 12px; border: 1px solid #839e98; border-radius: 8px; background: white; }
+#find-elevator, #transfer-guide, #outage-guide { scroll-margin-top: 16px; }
+#refresh-operation { min-height: 44px; margin-top: 8px; padding: 6px 12px; border: 1px solid #155b50; border-radius: 8px; background: white; color: #155b50; font: inherit; cursor: pointer; }
+#refresh-operation:disabled { opacity: .65; cursor: wait; }
+#find-transfer-elevators { min-height: 44px; margin-top: 14px; padding: 8px 12px; border: 1px solid #155b50; border-radius: 8px; background: white; color: #155b50; font: inherit; cursor: pointer; }
+#saved-station-list { display: flex; flex-wrap: wrap; gap: 8px; }
+#saved-stations p { margin-bottom: 6px; font-weight: 700; }
+#saved-station-list button, .save-station { min-height: 44px; padding: 6px 12px; border: 1px solid #839e98; border-radius: 8px; color: #155b50; background: white; font: inherit; cursor: pointer; }
+.save-station { margin-right: 10px; }
+.save-station[aria-pressed="true"] { background: #e4f1eb; }
+.saved-station { display: inline-flex; gap: 4px; }
+#saved-station-feedback:empty { margin: 0; }
+.facility-map-link { display: inline-flex; align-items: center; min-height: 44px; margin-right: 12px; }
+.facility-card-header { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 4px; }
+.facility-status { display: inline-block; border-radius: 20px; padding: 2px 9px; background: #edf1f2; color: #354b50; font-weight: 700; }
+.facility-status[data-state="available"] { background: #dcefe4; color: #174c35; }
+.facility-status[data-state="unavailable"] { background: #f9e5dc; color: #783413; }
+
+/* The navigation uses flex when visible. */
+.quick-nav[hidden] { display: none; }
