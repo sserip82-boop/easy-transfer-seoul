@@ -60,3 +60,16 @@ node server.mjs
 ## GitHub Pages 포트폴리오 시연
 
 이 앱 폴더를 별도의 GitHub 저장소에 올립니다. 저장소 Settings → Pages에서 Deploy from a branch를 선택하고 main, /(root)를 지정합니다. 제공되는 github.io 주소에서는 공식 CSV 환승 안내와 충무로 7번 출입구 가상 고장 시연이 열립니다. 카카오맵, 서울시 조회, Gemini까지 실행하는 공개 버전은 Node.js 서버를 지원하는 별도 호스팅과 서버 환경변수 설정이 필요합니다. 개인 API 키를 저장소에 넣지 않습니다.
+
+## 전체 기능 공개 배포
+
+Vercel에서 이 저장소를 Import한다. 저장소의 vercel.json이 화면 파일과 Node.js API를 배포한다.
+
+Vercel 프로젝트의 Environment Variables에서 Production에 다음 값을 등록한다.
+
+- KAKAO_JS_KEY — 카카오 JavaScript 키. 카카오 개발자 콘솔에서 실제 배포 주소를 JavaScript SDK 도메인으로 등록한다.
+- SEOUL_OPEN_API_KEY — 서울 열린데이터광장 일반 인증키.
+- GEMINI_API_KEY — Gemini API 키.
+- KRIC_API_KEY — KRIC 환승 예제 조회가 필요한 경우만 설정.
+
+변수를 저장한 후 재배포한다. 공개 주소에서 혜화 시설 목록·가동 상태, 카카오 지도, Gemini AI 검색을 차례로 확인한다. GitHub Pages에는 정적 시연 화면이 제공된다.

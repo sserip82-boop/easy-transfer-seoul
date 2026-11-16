@@ -1,5 +1,6 @@
 import http from "node:http";
 import { readFile } from "node:fs/promises";
+import { pathToFileURL } from "node:url";
 
 const port = Number(process.env.PORT || 4173);
 const assets = new Map([
@@ -101,21 +102,30 @@ async function interpretSearch(request, response) {
     response.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
     response.end(JSON.stringify(body));
   };
-  if (request.headers.origin !== `http://${request.headers.host}` ||
-      request.headers["content-type"] !== "application/json") {
+  const protocol = process.env.VERCEL === "1" ? "https" : "http";
+  if (request.headers.origin !== `${protocol}://${request.headers.host}` ||
+      request.headers["content-type"]?.split(";")[0] !== "application/json") {
     return send(403, { error: "Invalid request origin" });
   }
   const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) return send(200, { configured: false });
-  const chunks = [];
-  let size = 0;
-  for await (const chunk of request) {
-    size += chunk.length;
-    if (size > 2048) return send(413, { error: "Query too large" });
-    chunks.push(chunk);
-  }
   let query;
-  try { ({ query } = JSON.parse(Buffer.concat(chunks).toString("utf8"))); }
+  try {
+    if (request.body !== undefined) {
+      const payload = typeof request.body === "string" ? request.body : JSON.stringify(request.body);
+      if (Buffer.byteLength(payload) > 2048) return send(413, { error: "Query too large" });
+      ({ query } = JSON.parse(payload));
+    } else {
+      const chunks = [];
+      let size = 0;
+      for await (const chunk of request) {
+        size += chunk.length;
+        if (size > 2048) return send(413, { error: "Query too large" });
+        chunks.push(chunk);
+      }
+      ({ query } = JSON.parse(Buffer.concat(chunks).toString("utf8")));
+    }
+  }
   catch { return send(400, { error: "Invalid query" }); }
   if (typeof query !== "string" || !query.trim() || query.length > 120) {
     return send(400, { error: "Invalid query" });
@@ -162,8 +172,7 @@ const api = new Map([
   ["/api/transfer", transfer],
 ]);
 
-const server = http.createServer(async (request, response) => {
-  const path = request.url.split("?")[0];
+export async function handleRequest(request, response, path = request.url.split("?")[0]) {
   try {
     if (request.method === "POST" && path === "/api/interpret-search") {
       await interpretSearch(request, response);
@@ -184,6 +193,9 @@ const server = http.createServer(async (request, response) => {
     response.writeHead(502, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: "공식 API 응답을 확인하지 못했습니다." }));
   }
-});
-server.listen(port, "127.0.0.1", () => console.log(`http://localhost:${port}`));
+}
+
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  http.createServer(handleRequest).listen(port, "127.0.0.1", () => console.log(`http://localhost:${port}`));
+}
 
